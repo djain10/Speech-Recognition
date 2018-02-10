@@ -22,12 +22,23 @@ def splitAtVowel(word):
 				while nextLetter not in list("aeiou"):
 					newWord = newWord + nextLetter
 					i += 1
-					print i
 					if i < len(word):
 						nextLetter = word[i]
 					else:
 						break
 				wordPossibilities.append(newWord)
-	return wordPossibilities
+	return list(set(wordPossibilities))
 
-print splitAtVowel("catastrophic")
+def generateStutter(word):
+	wordList = []
+	for i, letter in enumerate(word):
+		for e in range(2):
+			wordList.append(str(word[:i] + " " + letter + " " + word[i:]).strip())
+			letter = letter + " " + letter
+	for val in splitAtVowel(word):
+		wordList.append(word[:word.index(val)] + " " + val + " " + word[word.index(val):])
+	return wordList
+
+
+
+print generateStutter("catastrophic")
