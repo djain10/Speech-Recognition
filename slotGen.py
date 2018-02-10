@@ -1,6 +1,7 @@
 # Only says part of the word
 # Find time that alexa listens before going to response
 # Generate Stuttered words
+import itertools
 
 def indexOfNextVowel(partialWord, i):
 	for letter in partialWord:
@@ -55,15 +56,21 @@ def genAllSpeechPatterns(sentence):
 		for word in generateStutter(wordValue):
 			if word not in info[wordValue].itervalues():
 				info[wordValue][word] = []
-			info[wordValue][word].append("Stutter")
+				info[wordValue][wordValue] = []
+			if word != wordValue:
+				info[wordValue][word].append("Stutter")
 		for word in generatePartialWords(wordValue):
 			if word not in info[wordValue].itervalues():
 				info[wordValue][word] = []
-			info[wordValue][word].append("Partial")
+			if word != wordValue:
+				info[wordValue][word].append("Partial")
 	return info
+
+#def gene
 
 #def genSpeechPattern(input, output):
 
 
 #print generateStutter("cat")
-print genAllSpeechPatterns("this game is incomprehensible")
+a = genAllSpeechPatterns("this game is incomprehensible")
+sentenceList = []
