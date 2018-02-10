@@ -39,6 +39,14 @@ def generateStutter(word):
 		wordList.append(str(word[:word.index(val)] + " " + val + " " + word[word.index(val):]).strip())
 	return list(set(wordList))
 
+def generatePartialWords(word):
+	wordList = []
+	for i in range(1,len(word) + 1):
+		wordList.append(word[:i])
+	return wordList
 
+def convertWtoP(word):
+	return word.replace("w", )
 
-print generateStutter("cat")
+#print generateStutter("cat")
+print generatePartialWords("Mercedes")
