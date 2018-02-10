@@ -36,9 +36,9 @@ def generateStutter(word):
 			wordList.append(str(word[:i] + " " + letter + " " + word[i:]).strip())
 			letter = letter + " " + letter
 	for val in splitAtVowel(word):
-		wordList.append(word[:word.index(val)] + " " + val + " " + word[word.index(val):])
-	return wordList
+		wordList.append(str(word[:word.index(val)] + " " + val + " " + word[word.index(val):]).strip())
+	return list(set(wordList))
 
 
 
-print generateStutter("catastrophic")
+print generateStutter("cat")
