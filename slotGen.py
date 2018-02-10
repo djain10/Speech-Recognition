@@ -2,7 +2,8 @@
 # Find time that alexa listens before going to response
 # Generate Stuttered words
 import itertools
-
+import string
+import json
 def indexOfNextVowel(partialWord, i):
 	for letter in partialWord:
 		if letter in list("aeiou"):
@@ -52,18 +53,19 @@ def convertWtoP(word):
 def genAllSpeechPatterns(sentence):
 	info = {}
 	for wordValue in sentence.split(" "):
-		info[wordValue] = {}
-		for word in generateStutter(wordValue):
-			if word not in info[wordValue].itervalues():
-				info[wordValue][word] = []
-				info[wordValue][wordValue] = []
-			if word != wordValue:
-				info[wordValue][word].append("Stutter")
-		for word in generatePartialWords(wordValue):
-			if word not in info[wordValue].itervalues():
-				info[wordValue][word] = []
-			if word != wordValue:
-				info[wordValue][word].append("Partial")
+		if len(wordValue) > 0:
+			info[wordValue] = {}
+			for word in generateStutter(wordValue):
+				if word not in info[wordValue].itervalues():
+					info[wordValue][word] = []
+					info[wordValue][wordValue] = []
+				if word != wordValue:
+					info[wordValue][word].append("Stutter")
+			for word in generatePartialWords(wordValue):
+				if word not in info[wordValue].itervalues():
+					info[wordValue][word] = []
+				if word != wordValue:
+					info[wordValue][word].append("Partial")
 	return info
 
 #def gene
@@ -72,5 +74,8 @@ def genAllSpeechPatterns(sentence):
 
 
 #print generateStutter("cat")
-a = genAllSpeechPatterns("this game is incomprehensible")
-sentenceList = []
+#a = genAllSpeechPatterns("this game is incomprehensible")
+allWords = ' '.join(open("listOfSentences.txt").read().split("\n")).translate(None, string.punctuation)
+print genAllSpeechPatterns(allWords)
+with open('result.json', 'w') as fp:
+	json.dump(genAllSpeechPatterns(allWords), fp)
