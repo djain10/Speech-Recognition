@@ -1,7 +1,10 @@
 def splitAtVowel(word):
+	wordPossibilities = []
 	# This simulates stuttering
 	vowels = list("aeiou")
-	for letter in word:
+	for i, letter in enumerate(word):
 		if letter in vowels:
-			print("Vowels in this word")
-splitAtVowel("car")
+			print(word[:i] + ' ' + word)
+			#print(word[:i])
+
+splitAtVowel("calculator")
