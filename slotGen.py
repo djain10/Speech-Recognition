@@ -48,5 +48,22 @@ def generatePartialWords(word):
 def convertWtoP(word):
 	return word.replace("w", )
 
+def genAllSpeechPatterns(sentence):
+	info = {}
+	for wordValue in sentence.split(" "):
+		info[wordValue] = {}
+		for word in generateStutter(wordValue):
+			if word not in info[wordValue].itervalues():
+				info[wordValue][word] = []
+			info[wordValue][word].append("Stutter")
+		for word in generatePartialWords(wordValue):
+			if word not in info[wordValue].itervalues():
+				info[wordValue][word] = []
+			info[wordValue][word].append("Partial")
+	return info
+
+#def genSpeechPattern(input, output):
+
+
 #print generateStutter("cat")
-print generatePartialWords("Mercedes")
+print genAllSpeechPatterns("this game is incomprehensible")
