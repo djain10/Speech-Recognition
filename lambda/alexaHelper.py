@@ -18,7 +18,7 @@ def handle_session_end_request():
 	"response": {
 	"outputSpeech": {
 	"type": "PlainText",
-	"text": "I have no idea what you said, so I'm going to exit.  Thank you for asking an inanimate circular object how to invest your money"
+	"text": "Skill Stopped while in progress.  Results not saved."
 		},
 		"shouldEndSession": True
 	  }
