@@ -1,4 +1,5 @@
 import json
+import traceback
 import alexaHelper
 import random
 import string
@@ -119,18 +120,22 @@ def getAllSlots(intent):
 			pass
 	return sentence
 
-def getAllMisTypes(sentence):
+def getAllMisTypes(sentence, actualSentence):
+	actualSentence = list(actualSentence)
 	countDict = {"MN": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}
 	for word in sentence.split(" "):
-		for val in DATABASE[word]:
-			if val == 'WP':
-				countDict["WP"] += 1
-			if val == "MN":
-				countDict["MN"] += 1
-			if val == "Stutter":
-				countDict["Stutter"] += 1
-			if val == "Partial":
-				countDict["Partial"] += 1
+		try:
+			for val in DATABASE[word]:
+				if val == "WP":
+					countDict["WP"] += 1
+				if val == "MN":
+					countDict["MN"] += 1
+				if val == "Stutter":
+					countDict["Stutter"] += 1
+				if val == "Partial" and val not in actualSentence:
+					countDict["Partial"] += 1
+		except:
+			pass
 	return countDict
 
 
@@ -167,10 +172,11 @@ def on_intent(intent_request, session):
 				try:
 					print session['attributes']['Question']
 					value = levenshtein(str(session['attributes']['Question']).translate(None, string.punctuation).lower(), str(getAllSlots(intent_request)))
-					result = getAllMisTypes(str(getAllSlots(intent_request)))
-					result['Levenshtein'] = value
+					results = getAllMisTypes(str(getAllSlots(intent_request)), str(session['attributes']['Question']).translate(None, string.punctuation).lower())
+					print results
+					results['Levenshtein'] = value
 				except Exception as exp:
-					print exp
+					print traceback.print_exc()
 					value = 0
 			if count != 3:
 				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Repeat the following sentence. {}".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value, question), False, sessionCount=count, question=question)
