@@ -122,7 +122,7 @@ def getAllSlots(intent):
 def getAllMisTypes(sentence):
 	countDict = {"MN": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}
 	for word in sentence.split(" "):
-		for val in DATASET[word]:
+		for val in DATABASE[word]:
 			if val == 'WP':
 				countDict["WP"] += 1
 			if val == "MN":
