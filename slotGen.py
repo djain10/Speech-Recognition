@@ -75,7 +75,7 @@ def genAllSpeechPatterns(sentence):
 
 #print generateStutter("cat")
 #a = genAllSpeechPatterns("this game is incomprehensible")
-allWords = ' '.join(open("listOfSentences.txt").read().split("\n")).translate(None, string.punctuation)
+allWords = ' '.join(open("listOfSentences.txt").read().split("\n")).translate(None, string.punctuation).lower()
 print genAllSpeechPatterns(allWords)
 with open('result.json', 'w') as fp:
 	json.dump(genAllSpeechPatterns(allWords), fp)
