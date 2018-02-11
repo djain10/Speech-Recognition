@@ -1,5 +1,7 @@
 import json
-
+import alexaHelper
+import random
+sentences = open("listOfSentences.txt").read().split("\n")
 
 
 def createResponse(text):
@@ -9,18 +11,15 @@ def createResponse(text):
 			"response": {
 			"outputSpeech": {
 			"type": "PlainText",
-			"text": "Thank you for using Diagnostic app that I can't think of a name for"
+			"text": "Repeat the following sentence. {}".format(random.choice(sentences))
 				},
-				"shouldEndSession": True
+				"shouldEndSession": False
 			  }
 			}
 
 
 def lambda_handler(event, context):
-	deviceID = event["context"]["System"]['device']['deviceId']
-	key = event["context"]["System"]['apiAccessToken']
-
-	return createResponse(place)
+	return createResponse("Ayyyyyyyyyyyyyyyyyyy")
 
 def on_intent(intent_request, session):
 	intent = intent_request["intent"]
@@ -33,6 +32,3 @@ def on_intent(intent_request, session):
 		return alexaHelper.get_welcome_response()
 	elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
 		return alexaHelper.handle_session_end_request()
-
-
-#vincenty((34.7189472, -82.3064414), (34.6708859002, -82.8352496018))
