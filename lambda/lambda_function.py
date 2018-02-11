@@ -121,7 +121,7 @@ def getAllSlots(intent):
 	return sentence
 
 def getAllMisTypes(sentence, actualSentence):
-	actualSentence = list(actualSentence)
+	actualSentence = actualSentence.split(" ")
 	countDict = {"MN": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}
 	for word in sentence.split(" "):
 		try:
@@ -132,8 +132,9 @@ def getAllMisTypes(sentence, actualSentence):
 					countDict["MN"] += 1
 				if val == "Stutter":
 					countDict["Stutter"] += 1
-				if val == "Partial" and val not in actualSentence:
-					countDict["Partial"] += 1
+				if val == "Partial":
+					if str(word) not in actualSentence:
+						countDict["Partial"] += 1
 		except:
 			pass
 	return countDict
