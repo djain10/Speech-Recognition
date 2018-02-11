@@ -6,10 +6,30 @@ SKILLNAME = "Alexa Speech Diagnostic Tool"
 INITIALSPEECH = "Thank you for checking out the alexa speech diagnostic tool.  We can detect early onset childhood speech disorders"
 REPEATSPEECH = INITIALSPEECH
 
-def createResponse(text, endSession=True, sessionCount=0):
+def levenshtein(s1, s2):
+    if len(s1) < len(s2):
+        return levenshtein(s2, s1)
+
+    # len(s1) >= len(s2)
+    if len(s2) == 0:
+        return len(s1)
+
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1       # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
+def createResponse(text, endSession=True, sessionCount=0, question=""):
 	return {
 			"version": "1.0",
-			"sessionAttributes": {'counter': sessionCount},
+			"sessionAttributes": {'counter': sessionCount}, {"Question": question},
 			"response": {
 			"outputSpeech": {
 			"type": "PlainText",
@@ -103,7 +123,9 @@ def on_intent(intent_request, session):
 	intent = intent_request["intent"]
 	intent_name = intent_request["intent"]["name"]
 	if intent_name == "startDiagnosis":
-		return createResponse("Repeat the following sentence. {}".format(random.choice(sentences)), False)
+		while len(question) < 3:
+			question = random.choice(sentences)
+		return createResponse("Repeat the following sentence. {}".format(question), False, question=question)
 	elif intent_name == "readSentence":
 		print session['attributes']['counter']
 		e = session['attributes']['counter']
@@ -112,7 +134,9 @@ def on_intent(intent_request, session):
 		if count > 2:
 			return createResponse("End session", True, sessionCount=count)
 		else:
-			return createResponse("Repeat the following sentence. {}".format(random.choice(sentences)), False, sessionCount=count)
+			while len(question) < 3:
+				question = random.choice(sentences)
+			return createResponse("Repeat the following sentence. {}".format(question), False, sessionCount=count, question=question)
 	elif intent_name == 'aboutDev':
 		return alexaHelper.devInfo()
 	elif intent_name == "AMAZON.HelpIntent":
