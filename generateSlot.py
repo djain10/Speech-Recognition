@@ -16,16 +16,17 @@ for k, v in d.items():
 			values.append(k1)
 completed = []
 for v in list(set(values)):
-	valAdd = """{
-            "id": null,
-            "name": {
-              "value": "word1",
-              "synonyms": []
-            }
-          },""".replace('word1', v.lower())
-	if str(valAdd) not in completed:
-		val = val + valAdd
-    	completed.append(valAdd)
+	for partWord in v.split(" "):
+		valAdd = """{
+	            "id": null,
+	            "name": {
+	              "value": "word1",
+	              "synonyms": []
+	            }
+	          },""".replace('word1', partWord.lower())
+		if str(valAdd) not in completed:
+			val = val + valAdd
+	    	completed.append(valAdd)
 
 val = val + """ ]
       }
