@@ -3,6 +3,7 @@ import traceback
 import alexaHelper
 import random
 import string
+import requests
 sentences = open("listOfSentences.txt").read().split("\n")
 SKILLNAME = "Alexa Speech Diagnostic Tool"
 INITIALSPEECH = "Thank you for checking out the alexa speech diagnostic tool.  We can detect early onset childhood speech disorders"
@@ -28,10 +29,11 @@ def levenshtein(s1, s2):
 
     return previous_row[-1]
 
-def createResponse(text, endSession=True, sessionCount=0, question=" "):
+def createResponse(text, endSession=True, sessionCount=0, question=" ", countDict={"NumOfVals": 0, "MN": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}):
+	print countDict
 	return {
 			"version": "1.0",
-			"sessionAttributes": {'counter': sessionCount, "Question": str(question)},
+			"sessionAttributes": {'counter': sessionCount, "Question": str(question), "countDict": countDict},
 			"response": {
 			"outputSpeech": {
 			"type": "PlainText",
@@ -120,9 +122,11 @@ def getAllSlots(intent):
 			pass
 	return sentence
 
-def getAllMisTypes(sentence, actualSentence):
+def getAllMisTypes(sentence, actualSentence, countDict=None):
 	actualSentence = actualSentence.split(" ")
-	countDict = {"MN": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}
+	if countDict == None:
+		countDict = {"NumOfVals": 0, "MN": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}
+	countDict["NumOfVals"] += 1
 	for word in sentence.split(" "):
 		try:
 			for val in DATABASE[word]:
@@ -137,6 +141,7 @@ def getAllMisTypes(sentence, actualSentence):
 						countDict["Partial"] += 1
 		except:
 			pass
+	countDict['Levenshtein'] += levenshtein(sentence, actualSentence)
 	return countDict
 
 
@@ -173,16 +178,16 @@ def on_intent(intent_request, session):
 				try:
 					print session['attributes']['Question']
 					value = levenshtein(str(session['attributes']['Question']).translate(None, string.punctuation).lower(), str(getAllSlots(intent_request)))
-					results = getAllMisTypes(str(getAllSlots(intent_request)), str(session['attributes']['Question']).translate(None, string.punctuation).lower())
+					results = getAllMisTypes(str(getAllSlots(intent_request)), str(session['attributes']['Question']).translate(None, string.punctuation).lower(), countDict = session['attributes']['countDict'])
 					print results
-					results['Levenshtein'] = value
 				except Exception as exp:
 					print traceback.print_exc()
 					value = 0
 			if count != 3:
-				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Repeat the following sentence. {}".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value, question), False, sessionCount=count, question=question)
+				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Repeat the following sentence. {}".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value, question), False, sessionCount=count, question=question, countDict=results)
 			else:
-				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Generating Report...".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value), True, sessionCount=count, question=question)
+				countDict=results
+				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Generating Report...".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value), True, sessionCount=count, question=question, countDict=results)
 	elif intent_name == 'aboutDev':
 		return alexaHelper.devInfo()
 	elif intent_name == "AMAZON.HelpIntent":

@@ -1,12 +1,19 @@
 from flask import Flask, request, render_template, request, url_for, redirect, Markup, Response, send_file, send_from_directory, make_response, jsonify
+import os
+import json
 app = Flask(__name__)
+
+#def createReport(jsonFileContainingData):
+
 
 @app.route('/', methods=['GET'])
 def index():
 	return render_template("index.html")
 
-@app.route("/report/<reportNum>", methods=["GET"])
+@app.route("/report/<reportNum>", methods=["GET", "POST"])
 def goToReport(reportNum):
+	if request.method == 'POST':
+		print str(json.loads(request.data)["password"])
 	return "<h1>Report for {}</h1>".format(reportNum)
 
 
