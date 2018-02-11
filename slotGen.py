@@ -48,25 +48,31 @@ def generatePartialWords(word):
 	return wordList
 
 def convertWtoP(word):
-	return word.replace("w", )
+	return word.replace("th", "w")
+
+def convertMtoN(word):
+	return word.replace("m", "n")
 
 def genAllSpeechPatterns(sentence):
 	info = {}
 	for wordValue in sentence.split(" "):
 		if len(wordValue) > 0:
-			info[wordValue] = {}
+			info[wordValue] = []
 			for word in generateStutter(wordValue):
-				if word not in info[wordValue].itervalues():
-					info[wordValue][word] = []
-					info[wordValue][wordValue] = []
-				if word != wordValue:
-					info[wordValue][word].append("Stutter")
+				if word not in info.itervalues():
+					info[word] = []
+				info[word].append("Stutter")
 			for word in generatePartialWords(wordValue):
-				if word not in info[wordValue].itervalues():
-					info[wordValue][word] = []
-				if word != wordValue:
-					info[wordValue][word].append("Partial")
+				if word not in info.itervalues():
+					info[word] = []
+				info[word].append("Partial")
+			if 'm' in wordValue.lower():
+				info[convertWtoP(wordValue)] = ['WP']
+			if 'th' in wordValue.lower():
+				info[convertMtoN(wordValue)] = ["MN"]
 	return info
+
+print(genAllSpeechPatterns("Testing to see if this works"))
 
 #def gene
 

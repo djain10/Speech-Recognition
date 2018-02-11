@@ -1,6 +1,7 @@
 import json
 import alexaHelper
 import random
+import string
 sentences = open("listOfSentences.txt").read().split("\n")
 SKILLNAME = "Alexa Speech Diagnostic Tool"
 INITIALSPEECH = "Thank you for checking out the alexa speech diagnostic tool.  We can detect early onset childhood speech disorders"
@@ -26,10 +27,10 @@ def levenshtein(s1, s2):
 
     return previous_row[-1]
 
-def createResponse(text, endSession=True, sessionCount=0, question=""):
+def createResponse(text, endSession=True, sessionCount=0, question=" "):
 	return {
 			"version": "1.0",
-			"sessionAttributes": {'counter': sessionCount}, {"Question": question},
+			"sessionAttributes": {'counter': sessionCount, "Question": str(question)},
 			"response": {
 			"outputSpeech": {
 			"type": "PlainText",
@@ -122,21 +123,41 @@ def on_intent(intent_request, session):
 	print str(session)
 	intent = intent_request["intent"]
 	intent_name = intent_request["intent"]["name"]
+	try:
+		question = session['attributes']['question']
+	except:
+		question = ""
 	if intent_name == "startDiagnosis":
 		while len(question) < 3:
 			question = random.choice(sentences)
 		return createResponse("Repeat the following sentence. {}".format(question), False, question=question)
 	elif intent_name == "readSentence":
-		print session['attributes']['counter']
-		e = session['attributes']['counter']
+		try:
+			e = session['attributes']['counter']
+		except:
+			e = 0
 		count = e + 1
+		try:
+			question = session['attributes']['question']
+		except:
+			question = ""
 		print getAllSlots(intent_request)
-		if count > 2:
+		if count > 3:
 			return createResponse("End session", True, sessionCount=count)
 		else:
 			while len(question) < 3:
 				question = random.choice(sentences)
-			return createResponse("Repeat the following sentence. {}".format(question), False, sessionCount=count, question=question)
+				try:
+					print session['attributes']['Question']
+					value = levenshtein(str(session['attributes']['Question']).translate(None, string.punctuation).lower(), str(getAllSlots(intent_request)))
+					print value
+				except Exception as exp:
+					print exp
+					value = 0
+			if count != 3:
+				return createResponse("Previous Levenshtein: {} . Repeat the following sentence. {}".format(value, question), False, sessionCount=count, question=question)
+			else:
+				return createResponse("Previous Levenshtein: {} . Generating Report...".format(value), True, sessionCount=count, question=question)
 	elif intent_name == 'aboutDev':
 		return alexaHelper.devInfo()
 	elif intent_name == "AMAZON.HelpIntent":
