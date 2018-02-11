@@ -66,9 +66,9 @@ def genAllSpeechPatterns(sentence):
 				if word not in info.itervalues():
 					info[word] = []
 				info[word].append("Partial")
-			if 'm' in wordValue.lower():
-				info[convertWtoP(wordValue)] = ['WP']
 			if 'th' in wordValue.lower():
+				info[convertWtoP(wordValue)] = ['WP']
+			if 'm' in wordValue.lower():
 				info[convertMtoN(wordValue)] = ["MN"]
 	return info
 

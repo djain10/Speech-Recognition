@@ -6,7 +6,7 @@ sentences = open("listOfSentences.txt").read().split("\n")
 SKILLNAME = "Alexa Speech Diagnostic Tool"
 INITIALSPEECH = "Thank you for checking out the alexa speech diagnostic tool.  We can detect early onset childhood speech disorders"
 REPEATSPEECH = INITIALSPEECH
-
+DATABASE = json.load(open("Database.json"))
 def levenshtein(s1, s2):
     if len(s1) < len(s2):
         return levenshtein(s2, s1)
@@ -118,6 +118,17 @@ def getAllSlots(intent):
 		except:
 			pass
 	return sentence
+
+def getAllMisTypes(sentence):
+	countDict = {"MW": 0, "Stutter": 0, "WP": 0, "Levenshtein": 0, "Partial": 0}
+	for word in sentence.split(" "):
+		for val in DATASET[word]:
+			if val == 'WP':
+				countDict["WP"] += 1
+			if val == "MN":
+
+
+
 
 def on_intent(intent_request, session):
 	print str(session)
