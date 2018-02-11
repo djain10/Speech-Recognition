@@ -13,11 +13,11 @@ input[type=text] { text-align:center }
 <center>
     <h1>Input Report Number</h1>
     <p>Reports are confidential and are stripped of all personal information</p>
-    <form role="form">
+    <form action = "{{url_for('getReport') }}" role="form" method="post">
         <div class="row">
             <div class="form-group">
                 <label for="code">Report Number</label>
-                <input type="text" class="form-control input-lg">
+                <input type="text" name="reportNum" class="form-control input-lg">
             </div>
         </div>
 

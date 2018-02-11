@@ -5,5 +5,19 @@ app = Flask(__name__)
 def index():
 	return render_template("index.html")
 
+@app.route("/report/<reportNum>", methods=["GET"])
+def goToReport(reportNum):
+	return "<h1>Report for {}</h1>".format(reportNum)
+
+
+@app.route("/", methods=["POST"])
+def getReport():
+	print("Working")
+	print str(request.form.items())
+	for key, quant in request.form.items():
+		print("{} = {}".format(key, quant))
+	return redirect(url_for('goToReport', reportNum=quant))
+
+
 if __name__ == "__main__":
 	app.run()
