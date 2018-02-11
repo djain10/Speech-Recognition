@@ -2,7 +2,9 @@ import json
 import alexaHelper
 import random
 sentences = open("listOfSentences.txt").read().split("\n")
-
+SKILLNAME = "Alexa Speech Diagnostic Tool"
+INITIALSPEECH = "Thank you for checking out the alexa speech diagnostic tool.  We can detect early onset childhood speech disorders"
+REPEATSPEECH = INITIALSPEECH
 
 def createResponse(text):
 	return {
@@ -19,7 +21,10 @@ def createResponse(text):
 
 
 def lambda_handler(event, context):
-	return createResponse("Ayyyyyyyyyyyyyyyyyyy")
+	if event["request"]["type"] == "LaunchRequest":
+		return alexaHelper.get_welcome_response(SKILLNAME, INITIALSPEECH, REPEATSPEECH)
+	elif event["request"]["type"] == "IntentRequest":
+		return on_intent(event["request"], event["session"])
 
 def on_intent(intent_request, session):
 	intent = intent_request["intent"]
