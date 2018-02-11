@@ -6,7 +6,7 @@ sentences = open("listOfSentences.txt").read().split("\n")
 SKILLNAME = "Alexa Speech Diagnostic Tool"
 INITIALSPEECH = "Thank you for checking out the alexa speech diagnostic tool.  We can detect early onset childhood speech disorders"
 REPEATSPEECH = INITIALSPEECH
-DATABASE = json.load(open("Database.json"))
+DATABASE = json.load(open("Dataset.json"))
 def levenshtein(s1, s2):
     if len(s1) < len(s2):
         return levenshtein(s2, s1)
@@ -131,6 +131,7 @@ def getAllMisTypes(sentence):
 				countDict["Stutter"] += 1
 			if val == "Partial":
 				countDict["Partial"] += 1
+	return countDict
 
 
 
@@ -166,14 +167,15 @@ def on_intent(intent_request, session):
 				try:
 					print session['attributes']['Question']
 					value = levenshtein(str(session['attributes']['Question']).translate(None, string.punctuation).lower(), str(getAllSlots(intent_request)))
-					print value
+					result = getAllMisTypes(str(getAllSlots(intent_request)))
+					result['Levenshtein'] = value
 				except Exception as exp:
 					print exp
 					value = 0
 			if count != 3:
-				return createResponse("Previous Levenshtein: {} . Repeat the following sentence. {}".format(value, question), False, sessionCount=count, question=question)
+				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Repeat the following sentence. {}".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value, question), False, sessionCount=count, question=question)
 			else:
-				return createResponse("Previous Levenshtein: {} . Generating Report...".format(value), True, sessionCount=count, question=question)
+				return createResponse("Stutter: {}. Partial: {}. M to P: {}. T H to W: {}. Levenshtein: {} . Generating Report...".format(results["Stutter"], results["Partial"], results["MN"], results["WP"], value), True, sessionCount=count, question=question)
 	elif intent_name == 'aboutDev':
 		return alexaHelper.devInfo()
 	elif intent_name == "AMAZON.HelpIntent":
